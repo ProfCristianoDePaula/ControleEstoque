@@ -27,6 +27,23 @@ namespace ControleEstoque.Controllers
             return View(await _context.Categorias.ToListAsync());
         }
 
+        // GET: Buscar
+        [HttpGet] // Informar o Tipo da Action
+        public async Task<IActionResult> Buscar(string? termo)
+        {
+            // Guardar o termo da busca em uma variavel ViewData
+            ViewData["termoBusca"] = termo;
+
+            List<Categoria> listaCategorias = await _context.Categorias.ToListAsync();
+
+            if (!String.IsNullOrEmpty(termo))
+            {
+                listaCategorias = await _context.Categorias.Where(
+                        p => p.Nome.Contains(termo)).ToListAsync();
+            }
+            return View("Index", listaCategorias);
+        }
+
         // GET: Categorias/Details/5
         public async Task<IActionResult> Details(int? id)
         {
