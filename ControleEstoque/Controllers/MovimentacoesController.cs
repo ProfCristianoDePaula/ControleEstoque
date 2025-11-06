@@ -63,6 +63,27 @@ namespace ControleEstoque.Controllers
         {
             if (ModelState.IsValid)
             {
+                // As alterações na logica, incluidas a partir desse ponto, só serão executadas, se os dados vierem corretos do formulário.
+
+                movimentacao.DataMovimentacao = DateTime.Now; // Data Atual
+
+                // Localizar um Registro por Id
+                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == movimentacao.ProdutoId);
+
+                // Verificar o Tipo de Movimentação
+                // Se for Entrada -> Aumentar a quantidade (Somar)
+                // Senao -> Diminuir a quantidade (Subtrair)
+
+                if (movimentacao.Tipo == "Entrada")
+                {
+                    // produto.EstoqueAtual += movimentacao.Quantidade;
+                    produto.EstoqueAtual = produto.EstoqueAtual + movimentacao.Quantidade;
+                }
+                else
+                {
+                    produto.EstoqueAtual -= movimentacao.Quantidade;
+                }
+
                 _context.Add(movimentacao);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
