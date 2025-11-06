@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ControleEstoque.Data;
 using ControleEstoque.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ControleEstoque.Controllers
 {
+    [Authorize]
     public class MovimentacoesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -81,7 +83,19 @@ namespace ControleEstoque.Controllers
                 }
                 else
                 {
-                    produto.EstoqueAtual -= movimentacao.Quantidade;
+                    // Antes de subtrair do estoque, é preciso verificar se o estoque atual é igual ou maior que a quantidade
+                    if (produto.EstoqueAtual >= movimentacao.Quantidade)
+                    {
+                        produto.EstoqueAtual -= movimentacao.Quantidade;
+                    }
+                    else
+                    {
+                        ViewData["Alerta"] = "O Estoque atual do produto " + produto.Nome + "(" + produto.EstoqueAtual + ") é menor que a quantidade da movimentação";
+
+                        ViewData["ProdutoId"] = new SelectList(_context.Produtos, "ProdutoId", "Nome", movimentacao.ProdutoId);
+                        ViewData["UsuarioId"] = new SelectList(_context.Users, "Id", "Email", movimentacao.UsuarioId);
+                        return View(movimentacao);
+                    }
                 }
 
                 _context.Add(movimentacao);
@@ -177,6 +191,22 @@ namespace ControleEstoque.Controllers
             var movimentacao = await _context.Movimentacoes.FindAsync(id);
             if (movimentacao != null)
             {
+                // Verificar o tipo da movimentacao 
+                // Se for Entrada -> retirar a quantidade do estoque atual
+                // Senao -> devolver a quantidade o estoque atual
+
+                // Buscar o produto no estoque a partir do ProdutoId da movimentação
+                var produto = _context.Produtos.FirstOrDefault(p => p.ProdutoId == movimentacao.ProdutoId);
+
+                if (movimentacao.Tipo == "Entrada")
+                {
+                    produto.EstoqueAtual -= movimentacao.Quantidade;
+                }
+                else
+                {
+                    produto.EstoqueAtual += movimentacao.Quantidade;
+                }
+
                 _context.Movimentacoes.Remove(movimentacao);
             }
 

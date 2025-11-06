@@ -9,6 +9,14 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
+
+<form asp-controller="Produtos" asp-action="Buscar" method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="termo" class="form-control" placeholder="Buscar por nome do produto..." value=@ViewData["termoBusca"] />
+        <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+    </div>
+</form>
+
 <table class="table">
     <thead>
         <tr>
@@ -43,41 +51,42 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Marca)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categoria.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstoqueAtual)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EstoqueMinimo)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DataValidade)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrecoCusto)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PrecoVenda)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProdutoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProdutoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProdutoId">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Marca)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Categoria.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EstoqueAtual)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EstoqueMinimo)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DataValidade)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrecoCusto)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.PrecoVenda)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descricao)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.ProdutoId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.ProdutoId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.ProdutoId">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

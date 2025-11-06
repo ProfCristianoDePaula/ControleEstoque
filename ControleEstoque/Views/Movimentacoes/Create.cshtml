@@ -2,6 +2,14 @@
 
 @{
     ViewData["Title"] = "Entradas e Saídas de Produtos";
+    var alerta = ViewData["Alerta"] as string;
+}
+
+@if (!String.IsNullOrEmpty(alerta))
+{
+    <div class="alert alert-warning">
+        @alerta
+    </div>
 }
 
 

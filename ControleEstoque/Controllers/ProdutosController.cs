@@ -1,15 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using ControleEstoque.Data;
+using ControleEstoque.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ControleEstoque.Data;
-using ControleEstoque.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ControleEstoque.Controllers
 {
+    [Authorize] // Permitir acesso apenas para usuários logados no sistema
     public class ProdutosController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -24,6 +26,25 @@ namespace ControleEstoque.Controllers
         {
             var applicationDbContext = _context.Produtos.Include(p => p.Categoria);
             return View(await applicationDbContext.ToListAsync());
+        }
+
+        // GET: Buscar
+        [HttpGet] // Informar o Tipo da Action
+        public async Task<IActionResult> Buscar(string? termo)
+        {
+            // Guardar o termo da busca em uma variavel ViewData
+            ViewData["termoBusca"] = termo;
+
+            // Listar todos os produtos cadastrados no banco de dados
+            List<Produto> listaProdutos = await _context.Produtos.ToListAsync();
+
+            // Filtrar somente os produtos que contem o termo procurado no nome do produto
+            if (!String.IsNullOrEmpty(termo))
+            {
+                listaProdutos = await _context.Produtos.Where(
+                        p => p.Nome.Contains(termo)).ToListAsync();
+            }
+            return View("Index", listaProdutos);
         }
 
         // GET: Produtos/Details/5
